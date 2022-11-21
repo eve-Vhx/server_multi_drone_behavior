@@ -20,7 +20,7 @@ def cmd_publisher():
     cmd_lat = 30.1234534
     cmd_lon = -90.2532567
     cmd_alt = 236.1256742
-    drone_id = 1
+    drone_id = 0
 
     nest_lat = 31.2144321
     nest_lon = -91.2334321

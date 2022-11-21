@@ -51,6 +51,5 @@ class FibonacciAction(object):
         
 if __name__ == '__main__':
     rospy.init_node('d1_cmd_action')
-    rospy.loginfo("action server script exists!")
     server = FibonacciAction('d1_cmd_action')
     rospy.spin()
