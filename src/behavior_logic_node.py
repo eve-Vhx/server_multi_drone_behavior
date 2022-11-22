@@ -6,7 +6,7 @@ import mavros
 import actionlib
 import actionlib_tutorials.msg
 import math
-from behavior_logic.msg import CommandGoal, CommandResult, CommandFeedback
+from behavior_logic.msg import CommandGoal, CommandAction, CommandResult, CommandFeedback
 
 
 class BehaviorLogic:
@@ -36,24 +36,17 @@ class BehaviorLogic:
             "drone_id": data.position_covariance_type
         }
 
-    def nest_data_cb(self, data):
-        self.nest_data = {
-            "lat": data.latitude,
-            "lon": data.longitude,
-            "nest_id": data.position_covariance_type
-        }
-
     def cmd_action_server(self, drone_id):
 
         if (drone_id == 0):
-            self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', behavior_logic.msg.CommandAction)
+            self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', CommandAction)
         elif (drone_id == 1):
-            self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', behavior_logic.msg.CommandAction)
+            self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', CommandAction)
 
         rospy.loginfo("waiting for the server...")
         self.cmd_client.wait_for_server()
         rospy.loginfo("connected to the server")
-        self.goal = behavior_logic.msg.CommandGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"])
+        self.goal = CommandGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"])
         self.cmd_client.send_goal(self.goal)
         rospy.loginfo("goal sent!")
         self.cmd_client.wait_for_result()
@@ -75,8 +68,21 @@ class BehaviorLogic:
         # self.cmd_client.wait_for_result()
         # return self.cmd_client.get_result()
 
+    def convert_deg_to_m(self, lat1, lat2, lon1, lon2):
+        R = 6371000
+        phi1 = lat1*math.pi/180
+        phi2 = lat2*math.pi/180
+        d_phi = (lat2-lat1)*math.pi/180
+        d_delta = (lon2-lon1)*math.pi/180
+
+        a = math.sin(d_phi/2)*math.sin(d_phi/2) + math.cos(phi1)*math.cos(phi2)*math.sin(d_delta/2)*math.sin(d_delta/2)
+        c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+        d = R*c #distance in meters
+        rospy.loginfo("Distance in meters between drone and nest: %f", d)
+        return d 
+
     def run_behavior_logic(self):
-        rospy.loginfo("running checks to see if drone %i can go to nest %i", self.master_cmd["drone_id"], self.nest_data["nest_id"])
+        rospy.loginfo("running checks to see if drone %i can go to nest", self.master_cmd["drone_id"])
 
         if(self.master_cmd["drone_id"] == 0):
             other_gps = self.d2_gps_data
@@ -85,9 +91,11 @@ class BehaviorLogic:
         else:
             rospy.loginfo("No valid drone detected!")
 
-        if(math.sqrt(((other_gps["lat"] - self.nest_data["lat"])*111139)**2 + ((other_gps["lon"] - self.nest_data["lon"])*111139)**2) < 20):
-                rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
-                return False
+        #Convert lat/lon distances to meters
+
+        if(self.convert_deg_to_m(self.master_cmd["lat"], other_gps["lat"], self.master_cmd["lon"], other_gps["lon"]) < 10):
+            rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
+            return False
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
@@ -101,7 +109,6 @@ class BehaviorLogic:
         rospy.Subscriber("drone1_gps", NavSatFix, self.d1_gps_cb, )
         rospy.Subscriber("drone2_gps", NavSatFix, self.d2_gps_cb, )
         rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
-        rospy.Subscriber("nest_cmd_data", NavSatFix, self.nest_data_cb, )
 
         rospy.sleep(2)
 

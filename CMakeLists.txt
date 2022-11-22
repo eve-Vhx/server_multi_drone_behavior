@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  actionlib_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -72,7 +74,10 @@ add_action_files(
 # Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  nav_msgs   sensor_msgs   std_msgs actionlib_msgs
+  nav_msgs   
+  sensor_msgs   
+  std_msgs 
+  actionlib_msgs
 )
 
 ################################################
@@ -107,7 +112,7 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES behavior_logic
- CATKIN_DEPENDS mavros nav_msgs roscpp rospy sensor_msgs std_msgs
+ CATKIN_DEPENDS mavros nav_msgs roscpp rospy sensor_msgs std_msgs actionlib_msgs message_runtime
  DEPENDS system_lib
 )
 
