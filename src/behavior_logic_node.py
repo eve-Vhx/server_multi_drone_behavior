@@ -11,6 +11,9 @@ from behavior_logic.msg import CommandGoal, CommandAction, CommandResult, Comman
 
 class BehaviorLogic:
 
+    ######### Callbacks for subscribers ###############
+    # handle incoming GPS and command data and store to member variables
+
     def d1_gps_cb(self, data):
         self.d1_gps_data = {
             "lat": data.latitude,
@@ -36,8 +39,28 @@ class BehaviorLogic:
             "drone_id": data.position_covariance_type
         }
 
-    def cmd_action_server(self, drone_id):
+    #####################################################
+    ########## Helper functions #########################
 
+    def convert_deg_to_m(self, lat1, lat2, lon1, lon2):
+        # Convert differences in latitude and longitude to distance in meters
+        R = 6371000
+        phi1 = lat1*math.pi/180
+        phi2 = lat2*math.pi/180
+        d_phi = (lat2-lat1)*math.pi/180
+        d_delta = (lon2-lon1)*math.pi/180
+
+        a = math.sin(d_phi/2)*math.sin(d_phi/2) + math.cos(phi1)*math.cos(phi2)*math.sin(d_delta/2)*math.sin(d_delta/2)
+        c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+        d = R*c #distance in meters
+        rospy.loginfo("Distance in meters between drone and nest: %f", d)
+        return d 
+
+    #####################################################
+    ########### Run the logic ###########################
+
+    def cmd_action_server(self, drone_id):
+        # Call the action server to the rpi to send mission to px4
         if (drone_id == 0):
             self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', CommandAction)
         elif (drone_id == 1):
@@ -52,20 +75,9 @@ class BehaviorLogic:
         self.cmd_client.wait_for_result()
         return self.cmd_client.get_result()
 
-    def convert_deg_to_m(self, lat1, lat2, lon1, lon2):
-        R = 6371000
-        phi1 = lat1*math.pi/180
-        phi2 = lat2*math.pi/180
-        d_phi = (lat2-lat1)*math.pi/180
-        d_delta = (lon2-lon1)*math.pi/180
-
-        a = math.sin(d_phi/2)*math.sin(d_phi/2) + math.cos(phi1)*math.cos(phi2)*math.sin(d_delta/2)*math.sin(d_delta/2)
-        c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
-        d = R*c #distance in meters
-        rospy.loginfo("Distance in meters between drone and nest: %f", d)
-        return d 
 
     def run_behavior_logic(self):
+        # Check to see if another drone occupies the mission nest
         rospy.loginfo("running checks to see if drone %i can go to nest", self.master_cmd["drone_id"])
 
         if(self.master_cmd["drone_id"] == 0):
@@ -85,6 +97,9 @@ class BehaviorLogic:
             rospy.loginfo("Passed checks... Executing mission")
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
             rospy.loginfo(self.cmd_result)
+
+    #####################################################
+    ########### Initialize class and member variables ###
 
 
 
