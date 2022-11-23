@@ -52,22 +52,6 @@ class BehaviorLogic:
         self.cmd_client.wait_for_result()
         return self.cmd_client.get_result()
 
-
-
-        # if (drone_id == 0):
-        #     self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', actionlib_tutorials.msg.FibonacciAction)
-        # elif (drone_id == 1):
-        #     self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', actionlib_tutorials.msg.FibonacciAction)
-
-        # rospy.loginfo("waiting for the server...")
-        # self.cmd_client.wait_for_server()
-        # rospy.loginfo("connected to the server")
-        # self.goal = actionlib_tutorials.msg.FibonacciGoal(order=20)
-        # self.cmd_client.send_goal(self.goal)
-        # rospy.loginfo("goal sent!")
-        # self.cmd_client.wait_for_result()
-        # return self.cmd_client.get_result()
-
     def convert_deg_to_m(self, lat1, lat2, lon1, lon2):
         R = 6371000
         phi1 = lat1*math.pi/180

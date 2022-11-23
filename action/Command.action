@@ -1,21 +1,11 @@
-# This is an action definition file, which has three parts: the goal
-# the result, and the feedback.
-# Part 1: the goal.
-#
-# The angle in degree the robot to turn, sent by client main
+# goal: GPS data sent to drone
 float64 lat
 float64 lon
 float64 alt
 ---
-# Part 2: the result, sent by action server unpon completion
-#
-# How much time used
+# Result: duration of task completion and boolean for success
 duration time_elapsed
-# Completion success
-uint8 success
-
+uint8 mission_completion
 ---
-# Part 3: the feedback,to be sent periodically by server
-#
-# The amount of time elapsed from the start
+# Feedback: time passed since start of mission
 duration time_elapsed

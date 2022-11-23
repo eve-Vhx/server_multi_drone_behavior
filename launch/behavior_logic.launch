@@ -2,5 +2,5 @@
 	<node pkg="behavior_logic" name="fake_gps_data" type="fake_gps_data.py" output="screen"></node>
 	<node pkg="behavior_logic" name="fake_cmd_msg" type="fake_cmd_msg.py" output="screen"></node>
 	<node pkg="behavior_logic" name="behavior_logic_node" type="behavior_logic_node.py" output="screen"></node>
-	<node pkg="behavior_logic" name="fake_action_response" type="fake_action_response.py" output="screen"></node>
+	<node pkg="behavior_logic" name="rpi_action_server" type="rpi_action_server.py" output="screen"></node>
 </launch>
