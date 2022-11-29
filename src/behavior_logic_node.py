@@ -6,7 +6,8 @@ import mavros
 import actionlib
 import actionlib_tutorials.msg
 import math
-from behavior_logic.msg import CommandGoal, CommandAction, CommandResult, CommandFeedback
+# from behavior_logic.msg import CommandGoal, CommandAction, CommandResult, CommandFeedback
+from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback 
 
 
 class BehaviorLogic:
@@ -36,7 +37,9 @@ class BehaviorLogic:
             "lat": data.latitude,
             "lon": data.longitude,
             "alt": data.altitude,
-            "drone_id": data.position_covariance_type
+            "drone_id": data.position_covariance_type,
+            "yaw_rad": 0,
+            "mission_type": 1,
         }
 
     #####################################################
@@ -62,14 +65,14 @@ class BehaviorLogic:
     def cmd_action_server(self, drone_id):
         # Call the action server to the rpi to send mission to px4
         if (drone_id == 0):
-            self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', CommandAction)
+            self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', server_px4_reqAction)
         elif (drone_id == 1):
-            self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', CommandAction)
+            self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', server_px4_reqAction)
 
         rospy.loginfo("waiting for the server...")
         self.cmd_client.wait_for_server()
         rospy.loginfo("connected to the server")
-        self.goal = CommandGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"])
+        self.goal = server_px4_reqGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"], yaw_rad=self.master_cmd["yaw_rad"], mission_type=self.master_cmd["mission_type"])
         self.cmd_client.send_goal(self.goal)
         rospy.loginfo("goal sent!")
         self.cmd_client.wait_for_result()
