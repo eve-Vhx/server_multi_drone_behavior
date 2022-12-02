@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import NavSatFix
 import mavros
 import actionlib
-import actionlib_tutorials.msg
 import math
-# from behavior_logic.msg import CommandGoal, CommandAction, CommandResult, CommandFeedback
 from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback 
 
 
@@ -65,9 +63,9 @@ class BehaviorLogic:
     def cmd_action_server(self, drone_id):
         # Call the action server to the rpi to send mission to px4
         if (drone_id == 0):
-            self.cmd_client = actionlib.SimpleActionClient('d1_cmd_action', server_px4_reqAction)
+            self.cmd_client = actionlib.SimpleActionClient('mavros/smr_px4_command/d1_cmd_action', server_px4_reqAction)
         elif (drone_id == 1):
-            self.cmd_client = actionlib.SimpleActionClient('d2_cmd_action', server_px4_reqAction)
+            self.cmd_client = actionlib.SimpleActionClient('mavros/smr_px4_command/d2_cmd_action', server_px4_reqAction)
 
         rospy.loginfo("waiting for the server...")
         self.cmd_client.wait_for_server()
