@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import NavSatFix
@@ -37,7 +37,7 @@ class BehaviorLogic:
             "alt": data.altitude,
             "drone_id": data.position_covariance_type,
             "yaw_rad": 0,
-            "mission_type": 1,
+            "mission_type": 2,
         }
 
     #####################################################
@@ -63,7 +63,7 @@ class BehaviorLogic:
     def cmd_action_server(self, drone_id):
         # Call the action server to the rpi to send mission to px4
         if (drone_id == 0):
-            self.cmd_client = actionlib.SimpleActionClient('mavros/smr_px4_command/d1_cmd_action', server_px4_reqAction)
+            self.cmd_client = actionlib.SimpleActionClient('/mavros/smr_px4_command/d1_cmd_action', server_px4_reqAction)
         elif (drone_id == 1):
             self.cmd_client = actionlib.SimpleActionClient('mavros/smr_px4_command/d2_cmd_action', server_px4_reqAction)
 
