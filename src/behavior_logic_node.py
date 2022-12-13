@@ -5,10 +5,12 @@ from sensor_msgs.msg import NavSatFix
 import mavros
 import actionlib
 import math
-from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback 
+from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback
+from msg_pkg.srv import UiReq
 
 
 class BehaviorLogic:
+
 
     ######### Callbacks for subscribers ###############
     # handle incoming GPS and command data and store to member variables
@@ -30,15 +32,34 @@ class BehaviorLogic:
         }
         # rospy.loginfo("D2 Lat: %f", self.d2_gps_data['lat'])
 
-    def master_cmd_cb(self, data):
+    # def master_cmd_cb(self, data):
+    #     self.master_cmd = {
+    #         "lat": data.latitude,
+    #         "lon": data.longitude,
+    #         "alt": data.altitude,
+    #         "drone_id": data.position_covariance_type,
+    #         "yaw_rad": 0,
+    #         "mission_type": 1,
+    #     }
+
+    ########## Callback for service #####################
+    #####################################################
+
+    def handle_ui_request(self, req):
+        print("UI has asked for a mission request | Lat: %f, Lon: %f, Alt: %f", req.lat, req.lon, req.alt)
+
         self.master_cmd = {
-            "lat": data.latitude,
-            "lon": data.longitude,
-            "alt": data.altitude,
-            "drone_id": data.position_covariance_type,
+            "lat": req.lat,
+            "lon": req.lon,
+            "alt": req.alt,
+            "drone_id": req.drone_id,
             "yaw_rad": 0,
             "mission_type": 2,
         }
+
+        self.run_behavior_logic()
+        return 1
+
 
     #####################################################
     ########## Helper functions #########################
@@ -99,20 +120,31 @@ class BehaviorLogic:
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
             rospy.loginfo(self.cmd_result)
 
+
     #####################################################
     ########### Initialize class and member variables ###
 
 
 
     def __init__(self, name):
+        ## Memeber variables
+        self.master_cmd = {
+            "lat": 0,
+            "lon": 0,
+            "alt": 0,
+            "drone_id": 0,
+            "yaw_rad": 0,
+            "mission_type": 1,
+        }
+
+
         rospy.init_node('behavior_logic_node', anonymous=True)
         rospy.Subscriber("drone1_gps", NavSatFix, self.d1_gps_cb, )
         rospy.Subscriber("drone2_gps", NavSatFix, self.d2_gps_cb, )
-        rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
+        # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
+        ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
 
         rospy.sleep(2)
-
-        self.run_behavior_logic()
 
 
 
