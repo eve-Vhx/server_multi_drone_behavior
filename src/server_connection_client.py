@@ -2,6 +2,7 @@
 import rospy
 from std_msgs.msg import String
 import mavros
+import threading
 import actionlib
 from msg_pkg.srv import checkups
 from msg_pkg.msg import ui_checkups_msg
@@ -25,6 +26,13 @@ def serviceCall():
 
 	except rospy.ServiceException as e:
 		print("Service call failed: %s"%e)
+
+		#Publish the ping for the UI to see
+		checkups_msg = ui_checkups_msg()
+		checkups_msg.pi_connect = False
+		checkups_msg.px4_connect = False
+		checkups_pub.publish(checkups_msg)
+
 
 
 
