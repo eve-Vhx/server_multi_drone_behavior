@@ -59,9 +59,9 @@ if __name__ == '__main__':
 	rospy.init_node('server_connection_client')
 	checkups_pub = rospy.Publisher('connection_checkups', ui_checkups_msg, queue_size=10)
 	rate = rospy.Rate(1)
+	timer = threading.Timer(5,timeout) # If 5 seconds elapse, call timeout()
+	timer.start()
 
 	while not rospy.is_shutdown():
-		timer = threading.Timer(5,timeout) # If 5 seconds elapse, call timeout()
-		timer.start()
 		serviceCall()
 		rospy.sleep(1)
