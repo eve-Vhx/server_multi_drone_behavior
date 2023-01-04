@@ -8,6 +8,7 @@ from msg_pkg.srv import checkups
 from msg_pkg.msg import ui_checkups_msg
 
 global timer
+global checkups_pub
 
 def timeout():
 	#Publish the ping for the UI to see
