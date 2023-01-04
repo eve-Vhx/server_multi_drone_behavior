@@ -7,7 +7,6 @@ import actionlib
 from msg_pkg.srv import checkups
 from msg_pkg.msg import ui_checkups_msg
 
-global timer
 global checkups_pub
 
 def timeout():
@@ -19,6 +18,7 @@ def timeout():
 
 
 def serviceCall():
+	global timer
 	rospy.wait_for_service('check_ups')
 	try:
 		# Call the service on the pi to return connection status
