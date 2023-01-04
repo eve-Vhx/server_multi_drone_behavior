@@ -7,6 +7,16 @@ import actionlib
 from msg_pkg.srv import checkups
 from msg_pkg.msg import ui_checkups_msg
 
+global timer
+
+def timeout():
+	#Publish the ping for the UI to see
+	checkups_msg = ui_checkups_msg()
+	checkups_msg.pi_connect = False
+	checkups_msg.px4_connect = False
+	checkups_pub.publish(checkups_msg)
+
+
 def serviceCall():
 	rospy.wait_for_service('check_ups')
 	try:
@@ -24,6 +34,10 @@ def serviceCall():
 		print(result.pi_connect)
 		print(result.px4_connect)
 
+		timer.cancel()
+		timer = threading.Timer(5,timeout)
+		timer.start()
+
 	except rospy.ServiceException as e:
 		print("Service call failed: %s"%e)
 
@@ -32,6 +46,10 @@ def serviceCall():
 		checkups_msg.pi_connect = False
 		checkups_msg.px4_connect = False
 		checkups_pub.publish(checkups_msg)
+
+		timer.cancel()
+		timer = threading.Timer(5,timeout)
+		timer.start()
 
 
 
@@ -42,5 +60,7 @@ if __name__ == '__main__':
 	rate = rospy.Rate(1)
 
 	while not rospy.is_shutdown():
+		timer = threading.Timer(5,timeout) # If 5 seconds elapse, call timeout()
+    	timer.start()
 		serviceCall()
 		rospy.sleep(1)
