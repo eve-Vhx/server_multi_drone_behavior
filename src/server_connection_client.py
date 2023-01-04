@@ -61,6 +61,6 @@ if __name__ == '__main__':
 
 	while not rospy.is_shutdown():
 		timer = threading.Timer(5,timeout) # If 5 seconds elapse, call timeout()
-    	timer.start()
+		timer.start()
 		serviceCall()
 		rospy.sleep(1)
