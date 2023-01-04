@@ -19,6 +19,10 @@ def serviceCall():
 		checkups_msg.px4_connect = result.px4_connect
 		checkups_pub.publish(checkups_msg)
 
+		print("Service request successful. Connection status:")
+		print(result.pi_connect)
+		print(result.px4_connect)
+
 	except rospy.ServiceException as e:
 		print("Service call failed: %s"%e)
 
