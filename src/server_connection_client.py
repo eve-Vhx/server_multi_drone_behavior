@@ -10,7 +10,7 @@ def serviceCall():
 	rospy.wait_for_service('check_ups')
 	try:
 		# Call the service on the pi to return connection status
-		connection_checkups = rospy.ServiceProxy('check_ups', ui_checkups_msg)
+		connection_checkups = rospy.ServiceProxy('check_ups', checkups)
 		result = connection_checkups(True)
 
 		#Publish the ping for the UI to see
