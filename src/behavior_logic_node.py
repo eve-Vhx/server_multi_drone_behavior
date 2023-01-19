@@ -96,7 +96,7 @@ class BehaviorLogic:
             self.cmd_client = actionlib.SimpleActionClient('mavros/smr_px4_command/d2_cmd_action', server_px4_reqAction)
 
         rospy.loginfo("waiting for the server...")
-        self.cmd_client.wait_for_server()
+        self.cmd_client.wait_for_server(timeout = rospy.Duration(3.0))
         rospy.loginfo("connected to the server")
         self.goal = server_px4_reqGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"], yaw_rad=self.master_cmd["yaw_rad"], mission_type=self.master_cmd["mission_type"])
         self.cmd_client.send_goal(self.goal)
