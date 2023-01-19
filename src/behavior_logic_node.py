@@ -32,13 +32,13 @@ class BehaviorLogic:
             "alt": data.altitude
         }
         # rospy.loginfo("D2 Lat: %f", self.d2_gps_data['lat'])
-    # def connections_cb(self, data):
-    #     self.connections_status = {
-    #         "px4": data.px4,
-    #         "mavros": data.mavros,
-    #         "wifi": data.wifi,
-    #         "lte": data.lte
-    #     }
+    def connections_cb(self, data):
+        self.connections_status = {
+            "px4": data.px4,
+            "mavros": data.mavros,
+            "wifi": data.wifi,
+            "lte": data.lte
+        }
     # def master_cmd_cb(self, data):
     #     self.master_cmd = {
     #         "lat": data.latitude,
@@ -122,7 +122,9 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
             return False
 
-        elif()
+        elif(self.connections_status["px4"] == False || self.connections_status["mavros"] == False || self.connections_status["wifi"] == False || self.connections_status["lte"] == False):
+            rospy.loginfo("Cannot execute mission. Connection check failed.")
+            return False
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
@@ -146,18 +148,18 @@ class BehaviorLogic:
             "mission_type": 1,
         }
 
-        # self.connections_status = {
-        #     "px4": False,
-        #     "mavros": False,
-        #     "wifi": False,
-        #     "lte": False
-        # }
+        self.connections_status = {
+            "px4": False,
+            "mavros": False,
+            "wifi": False,
+            "lte": False
+        }
 
 
         rospy.init_node('behavior_logic_node', anonymous=True)
         rospy.Subscriber("drone1_gps", NavSatFix, self.d1_gps_cb, )
         rospy.Subscriber("drone2_gps", NavSatFix, self.d2_gps_cb, )
-        # rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
+        rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
         # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
         ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
 
