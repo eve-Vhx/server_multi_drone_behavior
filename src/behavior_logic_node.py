@@ -122,7 +122,7 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
             return False
 
-        elif(self.connections_status["px4"] == False or self.connections_status["mavros"] == False or self.connections_status["wifi"] == False or self.connections_status["lte"] == False):
+        elif(self.connections_status["px4"] == False or self.connections_status["mavros"] == False):
             rospy.loginfo("Cannot execute mission. Connection check failed.")
             return False
 
