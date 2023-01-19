@@ -7,6 +7,7 @@ import actionlib
 import math
 from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback
 from msg_pkg.srv import UiReq
+from msg_pkg.msg import connections_drone
 
 
 class BehaviorLogic:
@@ -31,7 +32,13 @@ class BehaviorLogic:
             "alt": data.altitude
         }
         # rospy.loginfo("D2 Lat: %f", self.d2_gps_data['lat'])
-
+    # def connections_cb(self, data):
+    #     self.connections_status = {
+    #         "px4": data.px4,
+    #         "mavros": data.mavros,
+    #         "wifi": data.wifi,
+    #         "lte": data.lte
+    #     }
     # def master_cmd_cb(self, data):
     #     self.master_cmd = {
     #         "lat": data.latitude,
@@ -115,6 +122,8 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
             return False
 
+        elif()
+
         else:
             rospy.loginfo("Passed checks... Executing mission")
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
@@ -137,10 +146,18 @@ class BehaviorLogic:
             "mission_type": 1,
         }
 
+        # self.connections_status = {
+        #     "px4": False,
+        #     "mavros": False,
+        #     "wifi": False,
+        #     "lte": False
+        # }
+
 
         rospy.init_node('behavior_logic_node', anonymous=True)
         rospy.Subscriber("drone1_gps", NavSatFix, self.d1_gps_cb, )
         rospy.Subscriber("drone2_gps", NavSatFix, self.d2_gps_cb, )
+        # rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
         # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
         ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
 
