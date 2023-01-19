@@ -122,7 +122,7 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
             return False
 
-        elif()
+        # elif()
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
@@ -157,7 +157,7 @@ class BehaviorLogic:
         rospy.init_node('behavior_logic_node', anonymous=True)
         rospy.Subscriber("drone1_gps", NavSatFix, self.d1_gps_cb, )
         rospy.Subscriber("drone2_gps", NavSatFix, self.d2_gps_cb, )
-        # rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
+        #rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
         # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
         ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
 
