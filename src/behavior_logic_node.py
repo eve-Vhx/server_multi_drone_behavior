@@ -115,7 +115,7 @@ class BehaviorLogic:
         rospy.loginfo("waiting for the server...")
         self.cmd_client.wait_for_server(timeout = rospy.Duration(3.0))
         rospy.loginfo("connected to the server")
-        self.goal = server_px4_reqGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"], yaw_rad=self.master_cmd["yaw_rad"], mission_type=self.master_cmd["mission_type"])
+        self.goal = server_px4_reqGoal(lat=self.master_cmd["lat"], lon=self.master_cmd["lon"], alt=self.master_cmd["alt"], yaw_rad=self.master_cmd["yaw_rad"], mission_type=self.master_cmd["mission_type"], timestamp=self.connections_status["ros_timestamp"])
         self.cmd_client.send_goal(self.goal)
         rospy.loginfo("goal sent!")
         self.cmd_client.wait_for_result()
