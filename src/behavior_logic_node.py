@@ -134,8 +134,6 @@ class BehaviorLogic:
             rospy.loginfo("No valid drone detected!")
 
         #Convert lat/lon distances to meters
-        print("Testing time checks...")
-        print(rospy.Time.now().secs - self.connections_status["ros_timestamp"])
 
         if(self.convert_deg_to_m(self.master_cmd["lat"], other_gps["lat"], self.master_cmd["lon"], other_gps["lon"]) < 10):
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
@@ -145,6 +143,9 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Connection check failed.")
             return False
 
+        elif(abs(ros.Time.now().secs - self.connections_status["ros_timestamp"]) > 2):
+            rospy.loginfo("Cannot execute mission. Delay in status update too large.")
+            return False
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
