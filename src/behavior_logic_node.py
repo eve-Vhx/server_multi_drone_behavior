@@ -75,7 +75,7 @@ class BehaviorLogic:
         client.wait_for_server()
         print("Found the charging server")
         goal = NestChargeGoal()
-        goal.charge_drone = True
+        goal.charge_drone = req.charge_drone
         client.send_goal(goal)
         print("Nest charging goal sent!")
         client.wait_for_result()
