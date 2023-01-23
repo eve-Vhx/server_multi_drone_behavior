@@ -71,10 +71,13 @@ class BehaviorLogic:
     def handle_chrg_request(self, req):
         print("UI has asked for charging a nest")
         client = actionlib.SimpleActionClient('nest_charge', NestChargeAction)
+        print("Waiting for charging server")
         client.wait_for_server()
+        print("Found the charging server")
         goal = NestChargeGoal()
         goal.charge_drone = True
         client.send_goal(goal)
+        print("Nest charging goal sent!")
         client.wait_for_result()
         #except rospy.ROSInterruptException:
         #    print("Charge interrupted")
