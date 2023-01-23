@@ -6,8 +6,9 @@ import mavros
 import actionlib
 import math
 from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback
-from msg_pkg.srv import UiReq
+from msg_pkg.srv import UiReq, chrgDrone
 from msg_pkg.msg import connections_drone
+from msg_pkg.msg import NestChargeAction, NestChargeGoal
 
 
 class BehaviorLogic:
@@ -66,6 +67,18 @@ class BehaviorLogic:
 
         self.run_behavior_logic()
         return 1
+
+    def handle_chrg_request(self, req):
+        print("UI has asked for charging a nest")
+        client = actionlib.SimpleActionClient('nest_charge', NestChargeAction)
+        client.wait_for_server()
+        goal = NestChargeGoal()
+        goal.charge_drone = True
+        client.send_goal(goal)
+        client.wait_for_result()
+        except rospy.ROSInterruptException:
+            print("Charge interrupted")
+        return 
 
 
     #####################################################
@@ -131,11 +144,11 @@ class BehaviorLogic:
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
             rospy.loginfo(self.cmd_result)
 
+    def chrg_action_server(self,value):
+        rospy.loginfo("sending charging command to the nest")
 
     #####################################################
     ########### Initialize class and member variables ###
-
-
 
     def __init__(self, name):
         ## Memeber variables
@@ -162,7 +175,7 @@ class BehaviorLogic:
         rospy.Subscriber("d1_connection_checks", connections_drone, self.connections_cb)
         # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
         ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
-
+        chrg_service = rospy.Service('nest_charge_req',chrgDrone,self.handle_chrg_request)
         rospy.sleep(2)
 
 
