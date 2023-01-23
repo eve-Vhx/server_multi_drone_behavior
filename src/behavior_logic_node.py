@@ -143,7 +143,7 @@ class BehaviorLogic:
             rospy.loginfo("Cannot execute mission. Connection check failed.")
             return False
 
-        elif(abs(ros.Time.now().secs - self.connections_status["ros_timestamp"]) > 2):
+        elif(abs(rospy.Time.now().secs - self.connections_status["ros_timestamp"]) > 2):
             rospy.loginfo("Cannot execute mission. Delay in status update too large.")
             return False
 
