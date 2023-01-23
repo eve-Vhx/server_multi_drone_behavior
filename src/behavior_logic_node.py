@@ -76,8 +76,8 @@ class BehaviorLogic:
         goal.charge_drone = True
         client.send_goal(goal)
         client.wait_for_result()
-        except rospy.ROSInterruptException:
-            print("Charge interrupted")
+        #except rospy.ROSInterruptException:
+        #    print("Charge interrupted")
         return 
 
 
