@@ -135,7 +135,7 @@ class BehaviorLogic:
 
         #Convert lat/lon distances to meters
         print("Testing time checks...")
-        print(ros.Time.now() - self.connections_status["ros_timestamp"])
+        print(rospy.Time.now() - self.connections_status["ros_timestamp"])
 
         if(self.convert_deg_to_m(self.master_cmd["lat"], other_gps["lat"], self.master_cmd["lon"], other_gps["lon"]) < 10):
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
