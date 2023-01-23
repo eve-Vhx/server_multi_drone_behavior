@@ -38,7 +38,8 @@ class BehaviorLogic:
             "px4": data.px4,
             "mavros": data.mavros,
             "wifi": data.wifi,
-            "lte": data.lte
+            "lte": data.lte,
+            "ros_timestamp": data.ros_timestamp.secs
         }
     # def master_cmd_cb(self, data):
     #     self.master_cmd = {
@@ -133,6 +134,8 @@ class BehaviorLogic:
             rospy.loginfo("No valid drone detected!")
 
         #Convert lat/lon distances to meters
+        print("Testing time checks...")
+        print(ros.Time.now() - self.connections_status["ros_timestamp"])
 
         if(self.convert_deg_to_m(self.master_cmd["lat"], other_gps["lat"], self.master_cmd["lon"], other_gps["lon"]) < 10):
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
@@ -141,6 +144,7 @@ class BehaviorLogic:
         elif(self.connections_status["px4"] == False or self.connections_status["mavros"] == False):
             rospy.loginfo("Cannot execute mission. Connection check failed.")
             return False
+
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
