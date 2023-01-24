@@ -66,8 +66,8 @@ class BehaviorLogic:
             "mission_type": 2,
         }
 
-        self.run_behavior_logic()
-        return 1
+        action_status = self.run_behavior_logic()
+        return action_status
 
     def handle_chrg_request(self, req):
         print("UI has asked for charging a nest")
@@ -137,20 +137,21 @@ class BehaviorLogic:
 
         if(self.convert_deg_to_m(self.master_cmd["lat"], other_gps["lat"], self.master_cmd["lon"], other_gps["lon"]) < 10):
             rospy.loginfo("Cannot execute mission. Other drone occupies nest.")
-            return False
+            return 1
 
         elif(self.connections_status["px4"] == False or self.connections_status["mavros"] == False):
             rospy.loginfo("Cannot execute mission. Connection check failed.")
-            return False
+            return 2
 
         elif(abs(rospy.Time.now().secs - self.connections_status["ros_timestamp"]) > 2):
             rospy.loginfo("Cannot execute mission. Delay in status update too large.")
-            return False
+            return 3
 
         else:
             rospy.loginfo("Passed checks... Executing mission")
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
             rospy.loginfo(self.cmd_result)
+            return 0
 
     def chrg_action_server(self,value):
         rospy.loginfo("sending charging command to the nest")
