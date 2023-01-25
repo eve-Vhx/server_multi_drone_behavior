@@ -148,10 +148,10 @@ class BehaviorLogic:
             return 3
 
         else:
-            rospy.loginfo("Passed checks... Executing mission")
+            rospy.loginfo("Passed checks... Sending details to the Pi")
             self.cmd_result = self.cmd_action_server(drone_id=self.master_cmd["drone_id"])
             rospy.loginfo(self.cmd_result)
-            return 0
+            return self.cmd_result.mission_req_status
 
     def chrg_action_server(self,value):
         rospy.loginfo("sending charging command to the nest")
