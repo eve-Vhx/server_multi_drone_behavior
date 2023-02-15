@@ -17,9 +17,9 @@ def cmd_publisher():
     # cmd_alt = input('Desired Alt: ')
     # drone_id = input('Desired Drone ID: ')
 
-    cmd_lat = 42.15319
-    cmd_lon = -88.13460
-    cmd_alt = 236.1256742
+    cmd_lat = 47.3977507-0.0003
+    cmd_lon = 8.5456073-0.00001
+    cmd_alt = 500.105
     drone_id = 0
 
     nest_lat = 31.2144321
