@@ -8,8 +8,11 @@ import math
 from msg_pkg.msg import server_px4_reqGoal, server_px4_reqAction, server_px4_reqResult, server_px4_reqFeedback
 from msg_pkg.srv import UiReq, chrgDrone
 from msg_pkg.msg import connections_drone
-from msg_pkg.msg import NestChargeAction, NestChargeGoal
+from msg_pkg.msg import NestChargeAction, NestChargeGoal, NestChargeFeedback
 
+from msg_pkg.msg import NestBeaconAction, NestBeaconGoal, NestBeaconFeedback
+
+from msg_pkg.srv import cntlBeacon
 
 class BehaviorLogic:
 
@@ -71,7 +74,7 @@ class BehaviorLogic:
 
     def handle_chrg_request(self, req):
         print("UI has asked for charging a nest")
-        client = actionlib.SimpleActionClient('nest_charge', NestChargeAction)
+        client = actionlib.SimpleActionClient('Charge_cntl', NestChargeAction)
         print("Waiting for charging server")
         client.wait_for_server()
         print("Found the charging server")
@@ -83,6 +86,20 @@ class BehaviorLogic:
         #except rospy.ROSInterruptException:
         #    print("Charge interrupted")
         return 
+
+
+    def handle_beacon_request(self, req):
+        print('Started handle_beacon_request')
+	client = actionlib.SimpleActionClient('Beacon_cntl', NestBeaconAction)
+	print('waiting for nest_beacon_as')
+	client.wait_for_server()
+	print('Found the Beacon Server')
+	goal = NestBeaconGoal()
+	goal.beacon_state = req.beacon_state
+	client.send_goal(goal)
+	print('NestBeaconGoal sent')
+	client.wait_for_result()
+	return
 
 
     #####################################################
@@ -185,6 +202,7 @@ class BehaviorLogic:
         # rospy.Subscriber("master_cmd", NavSatFix, self.master_cmd_cb, )
         ui_service = rospy.Service('ui_mission_req', UiReq, self.handle_ui_request)
         chrg_service = rospy.Service('nest_charge_req',chrgDrone,self.handle_chrg_request)
+        beacon_service = rospy.Service('nest_beacon_req',cntlBeacon,self.handle_beacon_request)
         rospy.sleep(2)
 
 
